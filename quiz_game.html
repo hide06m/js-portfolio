@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クイズゲーム</title>
+  <style>
+    :root {
+      --color-bg: #f4f7fb;
+      --color-card: #ffffff;
+      --color-text: #1f2937;
+      --color-muted: #6b7280;
+      --color-primary: #2563eb;
+      --color-primary-hover: #1d4ed8;
+      --color-border: #d6dde8;
+      --color-field: #f9fbff;
+      --color-success: #0f7b4f;
+      --color-error: #b42318;
+      --color-success-bg: #e9f8f0;
+      --color-error-bg: #fff0ee;
+      --color-shadow: rgba(31, 41, 55, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 34%),
+        linear-gradient(135deg, #f4f7fb 0%, #edf3f8 100%);
+      color: var(--color-text);
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    .quiz-card {
+      width: min(100%, 560px);
+      padding: 28px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-card);
+      box-shadow: 0 18px 45px var(--color-shadow);
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      color: var(--color-muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .question-area {
+      min-height: 132px;
+      display: grid;
+      align-items: center;
+      margin-bottom: 22px;
+      padding: 24px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-field);
+      font-size: clamp(1.35rem, 4vw, 2rem);
+      font-weight: 800;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .answer-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .answer-input {
+      min-width: 0;
+      flex: 1;
+      height: 48px;
+      padding: 0 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--color-text);
+      font-size: 1rem;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .answer-input:focus {
+      border-color: var(--color-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .answer-input:disabled {
+      background: #eef2f7;
+      color: var(--color-muted);
+      cursor: not-allowed;
+    }
+
+    .button {
+      min-height: 48px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--color-primary);
+      color: #fff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 160ms ease, transform 160ms ease;
+      white-space: nowrap;
+    }
+
+    .button:hover:not(:disabled) {
+      background: var(--color-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .feedback {
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: var(--color-muted);
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .feedback.correct {
+      background: var(--color-success-bg);
+      color: var(--color-success);
+    }
+
+    .feedback.incorrect {
+      background: var(--color-error-bg);
+      color: var(--color-error);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+
+      .quiz-card {
+        padding: 20px;
+      }
+
+      .status-row {
+        font-size: 0.9rem;
+      }
+
+      .question-area {
+        min-height: 118px;
+        padding: 18px;
+      }
+
+      .answer-row {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="quiz-card" aria-label="クイズゲーム">
+    <div class="status-row">
+      <div id="progressText">問題 0 / 3</div>
+      <div id="scoreText">スコア: 0</div>
+    </div>
+
+    <div id="questionArea" class="question-area">スタートボタンを押してください</div>
+
+    <div class="answer-row">
+      <input
+        id="answerInput"
+        class="answer-input"
+        type="text"
+        autocomplete="off"
+        placeholder="答えを入力"
+        disabled
+      >
+      <button id="answerButton" class="button" type="button" disabled>回答</button>
+    </div>
+
+    <div id="feedbackArea" class="feedback" aria-live="polite"></div>
+
+    <div class="actions">
+      <button id="startButton" class="button" type="button">スタート</button>
+      <button id="retryButton" class="button hidden" type="button">もう一度</button>
+    </div>
+  </main>
+
+  <script>
+    const questions = [
+      { question: "日本の首都は？", answer: "東京" },
+      { question: "フランスの首都は？", answer: "パリ" },
+      { question: "アメリカの首都は？", answer: "ワシントン" }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let isPlaying = false;
+
+    const progressText = document.getElementById("progressText");
+    const scoreText = document.getElementById("scoreText");
+    const questionArea = document.getElementById("questionArea");
+    const answerInput = document.getElementById("answerInput");
+    const answerButton = document.getElementById("answerButton");
+    const feedbackArea = document.getElementById("feedbackArea");
+    const startButton = document.getElementById("startButton");
+    const retryButton = document.getElementById("retryButton");
+
+    function startGame() {
+      currentQuestionIndex = 0;
+      score = 0;
+      isPlaying = true;
+
+      scoreText.textContent = `スコア: ${score}`;
+      feedbackArea.textContent = "";
+      feedbackArea.classList.remove("correct", "incorrect");
+      startButton.classList.add("hidden");
+      retryButton.classList.add("hidden");
+      answerInput.disabled = false;
+      answerButton.disabled = false;
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+
+      progressText.textContent = `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
+      questionArea.textContent = currentQuestion.question;
+      answerInput.value = "";
+      answerInput.focus();
+    }
+
+    function submitAnswer() {
+      if (!isPlaying) {
+        return;
+      }
+
+      const currentQuestion = questions[currentQuestionIndex];
+      const userAnswer = answerInput.value.trim();
+
+      feedbackArea.classList.remove("correct", "incorrect");
+
+      if (userAnswer === currentQuestion.answer) {
+        score += 1;
+        scoreText.textContent = `スコア: ${score}`;
+        feedbackArea.textContent = "正解です！";
+        feedbackArea.classList.add("correct");
+      } else {
+        feedbackArea.textContent = `不正解です。正解は「${currentQuestion.answer}」です。`;
+        feedbackArea.classList.add("incorrect");
+      }
+
+      currentQuestionIndex += 1;
+
+      if (currentQuestionIndex >= questions.length) {
+        finishGame();
+      } else {
+        showQuestion();
+      }
+    }
+
+    function finishGame() {
+      isPlaying = false;
+      progressText.textContent = `問題 ${questions.length} / ${questions.length}`;
+      questionArea.textContent = `全問終了！最終スコアは ${score} / ${questions.length} です。`;
+      answerInput.value = "";
+      answerInput.disabled = true;
+      answerButton.disabled = true;
+      retryButton.classList.remove("hidden");
+    }
+
+    function resetGame() {
+      startGame();
+    }
+
+    startButton.addEventListener("click", startGame);
+    retryButton.addEventListener("click", resetGame);
+    answerButton.addEventListener("click", submitAnswer);
+    answerInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        submitAnswer();
+      }
+    });
+  </script>
+</body>
+</html>
