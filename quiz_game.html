@@ -3,22 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>クイズゲーム</title>
+  <title>嵐 Quiz 100</title>
   <style>
     :root {
-      --color-bg: #f4f7fb;
-      --color-card: #ffffff;
-      --color-text: #1f2937;
-      --color-muted: #6b7280;
-      --color-primary: #2563eb;
-      --color-primary-hover: #1d4ed8;
-      --color-border: #d6dde8;
-      --color-field: #f9fbff;
-      --color-success: #0f7b4f;
-      --color-error: #b42318;
-      --color-success-bg: #e9f8f0;
-      --color-error-bg: #fff0ee;
-      --color-shadow: rgba(31, 41, 55, 0.14);
+      --ohno: #0072bc;
+      --sakurai: #e53935;
+      --aiba: #18a558;
+      --ninomiya: #f2c400;
+      --matsumoto: #8b4ac8;
+      --bg: #f4f6fa;
+      --card: #ffffff;
+      --text: #171717;
+      --muted: #667085;
+      --line: #d8deea;
+      --field: #fbfcfe;
+      --shadow: rgba(15, 23, 42, 0.12);
+      --success: #146c43;
+      --error: #b42318;
+      --success-bg: #eaf7ef;
+      --error-bg: #fff1ef;
     }
 
     * {
@@ -28,31 +31,46 @@
     body {
       min-height: 100vh;
       margin: 0;
-      display: grid;
-      place-items: center;
       padding: 24px;
       background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 34%),
-        linear-gradient(135deg, #f4f7fb 0%, #edf3f8 100%);
-      color: var(--color-text);
+        linear-gradient(135deg, rgba(0, 114, 188, 0.09), transparent 26%, rgba(229, 57, 53, 0.08) 50%, transparent 74%, rgba(24, 165, 88, 0.08)),
+        linear-gradient(180deg, #ffffff 0%, #f4f6fa 100%);
+      color: var(--text);
       font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      display: grid;
+      place-items: center;
     }
 
-    .quiz-card {
+    .card {
       width: min(100%, 560px);
       padding: 28px;
-      border: 1px solid var(--color-border);
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--color-card);
-      box-shadow: 0 18px 45px var(--color-shadow);
+      background: var(--card);
+      box-shadow: 0 20px 44px var(--shadow);
     }
+
+    .member-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      height: 8px;
+      margin: -28px -28px 24px;
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
+    }
+
+    .member-bar span:nth-child(1) { background: var(--ohno); }
+    .member-bar span:nth-child(2) { background: var(--sakurai); }
+    .member-bar span:nth-child(3) { background: var(--aiba); }
+    .member-bar span:nth-child(4) { background: var(--ninomiya); }
+    .member-bar span:nth-child(5) { background: var(--matsumoto); }
 
     .status-row {
       display: flex;
       justify-content: space-between;
       gap: 16px;
       margin-bottom: 22px;
-      color: var(--color-muted);
+      color: var(--muted);
       font-size: 0.95rem;
       font-weight: 700;
     }
@@ -63,9 +81,9 @@
       align-items: center;
       margin-bottom: 22px;
       padding: 24px;
-      border: 1px solid var(--color-border);
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--color-field);
+      background: var(--field);
       font-size: clamp(1.35rem, 4vw, 2rem);
       font-weight: 800;
       line-height: 1.5;
@@ -83,23 +101,24 @@
       flex: 1;
       height: 48px;
       padding: 0 14px;
-      border: 1px solid var(--color-border);
+      border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
-      color: var(--color-text);
+      color: var(--text);
+      font: inherit;
       font-size: 1rem;
       transition: border-color 160ms ease, box-shadow 160ms ease;
     }
 
     .answer-input:focus {
-      border-color: var(--color-primary);
+      border-color: var(--ohno);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      box-shadow: 0 0 0 3px rgba(0, 114, 188, 0.14);
     }
 
     .answer-input:disabled {
       background: #eef2f7;
-      color: var(--color-muted);
+      color: var(--muted);
       cursor: not-allowed;
     }
 
@@ -108,23 +127,33 @@
       padding: 0 20px;
       border: 0;
       border-radius: 8px;
-      background: var(--color-primary);
+      background: #111827;
       color: #fff;
       font: inherit;
       font-weight: 800;
       cursor: pointer;
-      transition: background 160ms ease, transform 160ms ease;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
       white-space: nowrap;
     }
 
-    .button:hover:not(:disabled) {
-      background: var(--color-primary-hover);
+    .button:hover:not(:disabled),
+    .button:focus-visible {
+      outline: none;
       transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+    }
+
+    .button.secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
     }
 
     .button:disabled {
       opacity: 0.55;
       cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
 
     .feedback {
@@ -133,19 +162,20 @@
       align-items: center;
       padding: 12px 14px;
       border-radius: 8px;
-      color: var(--color-muted);
+      color: var(--muted);
       font-weight: 700;
       line-height: 1.5;
+      background: #f8fafc;
     }
 
     .feedback.correct {
-      background: var(--color-success-bg);
-      color: var(--color-success);
+      background: var(--success-bg);
+      color: var(--success);
     }
 
     .feedback.incorrect {
-      background: var(--color-error-bg);
-      color: var(--color-error);
+      background: var(--error-bg);
+      color: var(--error);
     }
 
     .actions {
@@ -164,8 +194,12 @@
         padding: 16px;
       }
 
-      .quiz-card {
+      .card {
         padding: 20px;
+      }
+
+      .member-bar {
+        margin: -20px -20px 20px;
       }
 
       .status-row {
@@ -188,9 +222,13 @@
   </style>
 </head>
 <body>
-  <main class="quiz-card" aria-label="クイズゲーム">
+  <main class="card" aria-label="嵐クイズゲーム">
+    <div class="member-bar" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
     <div class="status-row">
-      <div id="progressText">問題 0 / 3</div>
+      <div id="progressText">問題 0 / 100</div>
       <div id="scoreText">スコア: 0</div>
     </div>
 
@@ -208,19 +246,116 @@
       <button id="answerButton" class="button" type="button" disabled>回答</button>
     </div>
 
-    <div id="feedbackArea" class="feedback" aria-live="polite"></div>
+    <div id="feedbackArea" class="feedback" aria-live="polite">準備ができたらスタートしてください。</div>
 
     <div class="actions">
       <button id="startButton" class="button" type="button">スタート</button>
-      <button id="retryButton" class="button hidden" type="button">もう一度</button>
+      <button id="retryButton" class="button secondary hidden" type="button">もう一度</button>
     </div>
   </main>
 
   <script>
     const questions = [
-      { question: "日本の首都は？", answer: "東京" },
-      { question: "フランスの首都は？", answer: "パリ" },
-      { question: "アメリカの首都は？", answer: "ワシントン" }
+      { question: "嵐のメンバー数は？", answer: "5人" },
+      { question: "嵐のリーダーは？", answer: "大野智" },
+      { question: "嵐のラップパートを多く担当し、「サクラップ」でも知られるメンバーは？", answer: "櫻井翔" },
+      { question: "相葉雅紀のメンバーカラーは？", answer: "緑" },
+      { question: "二宮和也のメンバーカラーは？", answer: "黄色" },
+      { question: "松本潤のメンバーカラーは？", answer: "紫" },
+      { question: "大野智のメンバーカラーは？", answer: "青" },
+      { question: "櫻井翔のメンバーカラーは？", answer: "赤" },
+      { question: "嵐が結成会見を行った場所は？", answer: "ハワイ・ホノルル" },
+      { question: "嵐のCDデビュー日は？", answer: "1999年11月3日" },
+      { question: "嵐のデビュー曲は？", answer: "A・RA・SHI" },
+      { question: "グループ名「嵐」の読み方は？", answer: "あらし" },
+      { question: "嵐の英字表記は？", answer: "ARASHI" },
+      { question: "嵐が活動休止に入った日付は？", answer: "2020年12月31日" },
+      { question: "活動休止前最後のオンラインライブのタイトルは？", answer: "This is 嵐 LIVE 2020.12.31" },
+      { question: "2019年の会見で、嵐は何年末から活動休止すると発表した？", answer: "2020年" },
+      { question: "2025年に発表された最後のツアーの開催時期は？", answer: "2026年春" },
+      { question: "2026年のラストツアー名は？", answer: "ARASHI LIVE TOUR 2026「We are ARASHI」" },
+      { question: "ARASHI LIVE TOUR 2026「We are ARASHI」の最終日は？", answer: "2026年5月31日" },
+      { question: "ARASHI LIVE TOUR 2026「We are ARASHI」は何大ドームツアー？", answer: "5大ドーム" },
+      { question: "2002年以降、嵐の作品リリースと深く関わったレーベル名は？", answer: "J Storm" },
+      { question: "2024年、嵐の5人が設立を発表した会社名は？", answer: "株式会社嵐" },
+      { question: "嵐が2019年に配信した初のデジタルシングルは？", answer: "Turning Up" },
+      { question: "大野智の誕生日は？", answer: "11月26日" },
+      { question: "櫻井翔の誕生日は？", answer: "1月25日" },
+      { question: "相葉雅紀の誕生日は？", answer: "12月24日" },
+      { question: "二宮和也の誕生日は？", answer: "6月17日" },
+      { question: "松本潤の誕生日は？", answer: "8月30日" },
+      { question: "嵐のメンバーで最年長は？", answer: "大野智" },
+      { question: "嵐のメンバーで最年少は？", answer: "松本潤" },
+      { question: "嵐のメンバーで千葉県出身なのは？", answer: "相葉雅紀" },
+      { question: "慶應義塾大学卒業として知られるメンバーは？", answer: "櫻井翔" },
+      { question: "ハリウッド映画「硫黄島からの手紙」に出演したメンバーは？", answer: "二宮和也" },
+      { question: "ドラマ「花より男子」で道明寺司を演じたメンバーは？", answer: "松本潤" },
+      { question: "ドラマ・映画「怪物くん」で主演したメンバーは？", answer: "大野智" },
+      { question: "報道番組「news zero」の月曜キャスターとして知られるメンバーは？", answer: "櫻井翔" },
+      { question: "バラエティ番組「相葉マナブ」で中心となるメンバーは？", answer: "相葉雅紀" },
+      { question: "バラエティ番組「ニノさん」で中心となるメンバーは？", answer: "二宮和也" },
+      { question: "NHK大河ドラマ「どうする家康」で徳川家康を演じたメンバーは？", answer: "松本潤" },
+      { question: "個展「FREESTYLE」など、アート活動でも知られるメンバーは？", answer: "大野智" },
+      { question: "「天才!志村どうぶつ園」や動物番組での活動でも親しまれたメンバーは？", answer: "相葉雅紀" },
+      { question: "映画「ヤッターマン」でヤッターマン1号を演じたメンバーは？", answer: "櫻井翔" },
+      { question: "大野智主演ドラマ「魔王」の主題歌は？", answer: "truth" },
+      { question: "松本潤主演ドラマ「失恋ショコラティエ」の主題歌は？", answer: "Bittersweet" },
+      { question: "相葉雅紀主演ドラマ「ようこそ、わが家へ」の主題歌は？", answer: "青空の下、キミのとなり" },
+      { question: "二宮和也主演ドラマ「弱くても勝てます」の主題歌は？", answer: "GUTS!" },
+      { question: "櫻井翔主演ドラマ「謎解きはディナーのあとで」の主題歌は？", answer: "迷宮ラブソング" },
+      { question: "松本潤主演ドラマ「99.9 -刑事専門弁護士-」第1シーズンの主題歌は？", answer: "Daylight" },
+      { question: "松本潤主演ドラマ「99.9 -刑事専門弁護士- SEASON II」の主題歌は？", answer: "Find The Answer" },
+      { question: "相葉雅紀主演ドラマ「貴族探偵」の主題歌は？", answer: "I'll be there" },
+      { question: "大野智主演映画「忍びの国」の主題歌は？", answer: "つなぐ" },
+      { question: "櫻井翔主演ドラマ「先に生まれただけの僕」の主題歌は？", answer: "Doors ～勇気の軌跡～" },
+      { question: "二宮和也主演映画「プラチナデータ」の主題歌は？", answer: "Breathless" },
+      { question: "相葉雅紀主演ドラマ「ラストホープ」の主題歌は？", answer: "Calling" },
+      { question: "櫻井翔主演ドラマ「家族ゲーム」の主題歌は？", answer: "Endless Game" },
+      { question: "大野智主演ドラマ「世界一難しい恋」の主題歌は？", answer: "I seek" },
+      { question: "大野智主演ドラマ「死神くん」の主題歌は？", answer: "誰も知らない" },
+      { question: "松本潤主演ドラマ「ラッキーセブン」の主題歌は？", answer: "ワイルド アット ハート" },
+      { question: "ドラマ「花より男子」の主題歌は？", answer: "WISH" },
+      { question: "ドラマ「花より男子2」の主題歌は？", answer: "Love so sweet" },
+      { question: "映画「花より男子F」の主題歌は？", answer: "One Love" },
+      { question: "NHKの2020ソングとして制作された嵐の楽曲は？", answer: "カイト" },
+      { question: "「カイト」の作詞・作曲を手がけたアーティストは？", answer: "米津玄師" },
+      { question: "2018年の高校野球応援ソングとして知られる嵐の楽曲は？", answer: "夏疾風" },
+      { question: "2019年ラグビーワールドカップの日本テレビ系イメージソングは？", answer: "BRAVE" },
+      { question: "嵐初の全編英語詞シングルとして知られる曲は？", answer: "Whenever You Call" },
+      { question: "ブルーノ・マーズが制作に関わった嵐の楽曲は？", answer: "Whenever You Call" },
+      { question: "嵐初のデジタルシングルは？", answer: "Turning Up" },
+      { question: "2020年11月3日に発売されたオリジナルアルバムは？", answer: "This Is 嵐" },
+      { question: "2026年に発表された約5年ぶりの新曲タイトルは？", answer: "Five" },
+      { question: "25周年を記念して行われたファン参加型の楽曲企画名は？", answer: "MY BEST ARASHI" },
+      { question: "MY BEST ARASHI公式ページで触れられている、デビューから届けられた楽曲数は？", answer: "423曲" },
+      { question: "2024年11月3日は、嵐のCDデビュー何周年？", answer: "25周年" },
+      { question: "嵐の1stアルバムは？", answer: "ARASHI No.1〜嵐は嵐を呼ぶ〜" },
+      { question: "2007年に発売された嵐のオリジナルアルバムは？", answer: "Time" },
+      { question: "2010年に発売されたオリジナルアルバムは？", answer: "僕の見ている風景" },
+      { question: "2011年に発売されたオリジナルアルバムは？", answer: "Beautiful World" },
+      { question: "2012年に発売されたオリジナルアルバムは？", answer: "Popcorn" },
+      { question: "2013年に発売されたオリジナルアルバムは？", answer: "LOVE" },
+      { question: "2014年に発売されたオリジナルアルバムは？", answer: "THE DIGITALIAN" },
+      { question: "2015年に発売されたオリジナルアルバムは？", answer: "Japonism" },
+      { question: "2016年に発売されたオリジナルアルバムは？", answer: "Are You Happy?" },
+      { question: "2017年に発売されたオリジナルアルバムは？", answer: "「untitled」" },
+      { question: "2019年に発売された20周年ベストアルバムは？", answer: "5×20 All the BEST!! 1999-2019" },
+      { question: "2009年に発売された10周年ベストアルバムは？", answer: "All the BEST! 1999-2009" },
+      { question: "ARAFES 2020 at NATIONAL STADIUMの会場は？", answer: "国立競技場" },
+      { question: "2011年に始まった、授業形式のチャリティーイベント名は？", answer: "嵐のワクワク学校" },
+      { question: "2018年から2019年に行われた20周年ツアー名は？", answer: "ARASHI Anniversary Tour 5×20" },
+      { question: "2009年から2010年に行われた10周年ツアー名は？", answer: "ARASHI Anniversary Tour 5×10" },
+      { question: "嵐初の全国5大ドームツアーとして知られる2008年のツアーは？", answer: "ARASHI Marks 2008 Dream-A-live" },
+      { question: "2008年のアジアツアーで、国内公演として2日連続開催した競技場は？", answer: "国立霞ヶ丘競技場" },
+      { question: "2020年に無観客配信されたアラフェスの正式タイトルは？", answer: "ARAFES 2020 at NATIONAL STADIUM" },
+      { question: "This is 嵐 LIVE 2020.12.31の会場は？", answer: "東京ドーム" },
+      { question: "ARASHI Anniversary Tour 5×20の公演数は？", answer: "50公演" },
+      { question: "「VS嵐」を放送していたテレビ局系列は？", answer: "フジテレビ" },
+      { question: "「嵐にしやがれ」を放送していたテレビ局系列は？", answer: "日本テレビ" },
+      { question: "「ひみつの嵐ちゃん!」を放送していたテレビ局系列は？", answer: "TBS" },
+      { question: "NHK紅白歌合戦で、嵐がグループとして2010年から担当した司会は？", answer: "白組司会" },
+      { question: "デビュー曲「A・RA・SHI」がイメージソングだった大会は？", answer: "バレーボールワールドカップ1999" },
+      { question: "嵐の5人が主演した2007年公開の映画は？", answer: "黄色い涙" }
     ];
 
     let currentQuestionIndex = 0;
@@ -236,26 +371,29 @@
     const startButton = document.getElementById("startButton");
     const retryButton = document.getElementById("retryButton");
 
+    function updateStatus() {
+      progressText.textContent = `問題 ${Math.min(currentQuestionIndex + 1, questions.length)} / ${questions.length}`;
+      scoreText.textContent = `スコア: ${score}`;
+    }
+
     function startGame() {
       currentQuestionIndex = 0;
       score = 0;
       isPlaying = true;
 
-      scoreText.textContent = `スコア: ${score}`;
-      feedbackArea.textContent = "";
-      feedbackArea.classList.remove("correct", "incorrect");
-      startButton.classList.add("hidden");
-      retryButton.classList.add("hidden");
       answerInput.disabled = false;
       answerButton.disabled = false;
+      startButton.classList.add("hidden");
+      retryButton.classList.add("hidden");
+      feedbackArea.className = "feedback";
+      feedbackArea.textContent = "答えを入力して回答してください。";
 
       showQuestion();
     }
 
     function showQuestion() {
       const currentQuestion = questions[currentQuestionIndex];
-
-      progressText.textContent = `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
+      updateStatus();
       questionArea.textContent = currentQuestion.question;
       answerInput.value = "";
       answerInput.focus();
@@ -269,19 +407,19 @@
       const currentQuestion = questions[currentQuestionIndex];
       const userAnswer = answerInput.value.trim();
 
-      feedbackArea.classList.remove("correct", "incorrect");
+      feedbackArea.className = "feedback";
 
       if (userAnswer === currentQuestion.answer) {
         score += 1;
-        scoreText.textContent = `スコア: ${score}`;
-        feedbackArea.textContent = "正解です！";
         feedbackArea.classList.add("correct");
+        feedbackArea.textContent = "正解です！";
       } else {
-        feedbackArea.textContent = `不正解です。正解は「${currentQuestion.answer}」です。`;
         feedbackArea.classList.add("incorrect");
+        feedbackArea.textContent = `不正解です。正解は「${currentQuestion.answer}」です。`;
       }
 
       currentQuestionIndex += 1;
+      updateStatus();
 
       if (currentQuestionIndex >= questions.length) {
         finishGame();
@@ -292,16 +430,29 @@
 
     function finishGame() {
       isPlaying = false;
-      progressText.textContent = `問題 ${questions.length} / ${questions.length}`;
       questionArea.textContent = `全問終了！最終スコアは ${score} / ${questions.length} です。`;
       answerInput.value = "";
       answerInput.disabled = true;
       answerButton.disabled = true;
       retryButton.classList.remove("hidden");
+      feedbackArea.className = "feedback";
+      feedbackArea.textContent = "もう一度遊ぶ場合は「もう一度」を押してください。";
+      updateStatus();
     }
 
     function resetGame() {
-      startGame();
+      currentQuestionIndex = 0;
+      score = 0;
+      isPlaying = false;
+      answerInput.value = "";
+      answerInput.disabled = true;
+      answerButton.disabled = true;
+      startButton.classList.remove("hidden");
+      retryButton.classList.add("hidden");
+      questionArea.textContent = "スタートボタンを押してください";
+      feedbackArea.className = "feedback";
+      feedbackArea.textContent = "準備ができたらスタートしてください。";
+      updateStatus();
     }
 
     startButton.addEventListener("click", startGame);
@@ -312,6 +463,8 @@
         submitAnswer();
       }
     });
+
+    updateStatus();
   </script>
 </body>
 </html>
